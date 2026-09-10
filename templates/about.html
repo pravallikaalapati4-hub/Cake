@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">Our Story</h1>
+    <p class="section-subtitle">The journey of bringing the fizz into every bite</p>
+
+    <div style="max-width:720px;margin:0 auto 3rem;text-align:center;">
+      <p style="font-size:1.1rem;color:var(--gray-700);line-height:1.8;">
+        Coke Bake was born from a simple idea: what if the iconic refreshment of Coca-Cola could live inside a dessert?
+        We set out to craft a premium bakery experience that celebrates that unmistakable cola character — sweet, slightly spicy,
+        and endlessly nostalgic — in cupcakes, cakes, pastries and cream desserts.
+      </p>
+    </div>
+
+    <div class="why-grid" style="margin-bottom:3rem;">
+      <div class="why-card">
+        <div class="icon">💡</div>
+        <h3>Our Inspiration</h3>
+        <p>The classic Coca-Cola bottle and the joy of sharing moments. We translate that fizz into layers of flavour.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">✨</div>
+        <h3>What Makes Us Special</h3>
+        <p>Signature cola syrups, careful reduction techniques, and recipes refined over hundreds of test batches.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">🌾</div>
+        <h3>Fresh Ingredients</h3>
+        <p>Butter, cream, chocolate and natural extracts — never artificial shortcuts. Quality you can taste.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">❤️</div>
+        <h3>Handcrafted Desserts</h3>
+        <p>Every cake is layered by hand. Every cupcake is frosted with care. Made daily in our kitchen.</p>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <h2>Taste the Difference</h2>
+      <p>Join thousands of dessert lovers who have already fallen for the fizz.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-white">Browse Menu</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

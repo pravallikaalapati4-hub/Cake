@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Custom Orders{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container" style="max-width:720px;">
+    <h1 class="section-title">My Custom Orders</h1>
+    {% if orders %}
+    {% for o in orders %}
+    <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+        <strong>Custom #{{ o.id }}</strong>
+        <span class="status-badge status-{{ o.status }}">{{ o.status }}</span>
+      </div>
+      {% if o.base_product %}<p><strong>Base:</strong> {{ o.base_product.name }}</p>{% endif %}
+      {% if o.cake_message %}<p><strong>Message:</strong> “{{ o.cake_message }}”</p>{% endif %}
+      <p><strong>Size:</strong> {{ o.size }}</p>
+      {% if o.flavour_notes %}<p><strong>Flavours:</strong> {{ o.flavour_notes }}</p>{% endif %}
+      {% if o.special_instructions %}<p><strong>Notes:</strong> {{ o.special_instructions }}</p>{% endif %}
+      {% if o.delivery_date %}<p><strong>Delivery date:</strong> {{ o.delivery_date }}</p>{% endif %}
+      <p style="margin-top:0.5rem;color:var(--coke-red);font-weight:700;">Est. ₹{{ '%.0f'|format(o.estimated_price) }}</p>
+      <p style="font-size:0.85rem;color:var(--gray-500);">{{ o.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">
+      <h3>No custom orders yet</h3>
+      <a href="{{ url_for('extra.custom_order') }}" class="btn btn-primary">Create one</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

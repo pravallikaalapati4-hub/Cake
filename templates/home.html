@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-badge">Premium Coca-Cola Inspired Desserts</span>
+      <h1>Taste the Fizz.<br><span class="highlight">Love the Bake.</span></h1>
+      <p>Where Coca-Cola-inspired flavors meet handcrafted desserts. Indulge in cupcakes, cakes, pastries & more.</p>
+      <div class="hero-btns">
+        <a href="{{ url_for('product.menu') }}" class="btn btn-primary">Explore Desserts</a>
+        <a href="{{ url_for('product.menu') }}" class="btn btn-outline">Order Now</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="img-placeholder" style="aspect-ratio:1;border-radius:24px;font-size:4rem;">🧁</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Featured Desserts</h2>
+    <p class="section-subtitle">Our most loved Coca-Cola inspired creations</p>
+    <div class="product-grid animate-on-scroll">
+      {% for p in featured %}
+      <div class="product-card">
+        <div class="img-wrap">
+          <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.parentElement.querySelector('.img-placeholder').style.display='flex';">
+          <div class="img-placeholder" style="display:none;position:absolute;inset:0;">🍰</div>
+          {% if current_user.is_authenticated %}
+          <button class="wishlist-btn" data-wishlist-toggle data-url="{{ url_for('product.toggle_wishlist', product_id=p.id) }}">♥</button>
+          {% endif %}
+        </div>
+        <div class="body">
+          <span class="category-tag">{{ p.category.name }}</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <p class="desc">{{ p.description }}</p>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          {% if current_user.is_authenticated %}
+          <form action="{{ url_for('cart.add_to_cart', product_id=p.id) }}" method="POST" data-ajax-cart>
+            <button type="submit" class="btn btn-primary btn-sm btn-block">Add to Cart</button>
+          </form>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm btn-block">Login to Order</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <h2 class="section-title">Dessert Categories</h2>
+    <p class="section-subtitle">Browse by your favourite type</p>
+    <div class="cat-grid animate-on-scroll">
+      {% for c in categories %}
+      <a href="{{ url_for('product.menu', category=c.name) }}" class="cat-card">
+        <div class="icon">
+          {% if c.name == 'Cupcakes' %}🧁
+          {% elif c.name == 'Cakes' %}🎂
+          {% elif c.name == 'Pastries' %}🥐
+          {% elif c.name == 'Cream Desserts' %}🍮
+          {% else %}🎁{% endif %}
+        </div>
+        <h3>{{ c.name }}</h3>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Best Sellers</h2>
+    <p class="section-subtitle">Customer favourites that keep selling out</p>
+    <div class="product-grid animate-on-scroll">
+      {% for p in bestsellers %}
+      <div class="product-card">
+        <div class="img-wrap">
+          <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="img-placeholder" style="display:none;position:absolute;inset:0;">🍰</div>
+        </div>
+        <div class="body">
+          <span class="category-tag">{{ p.category.name }}</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          <a href="{{ url_for('product.product_details', product_id=p.id) }}" class="btn btn-outline btn-sm btn-block">View</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <h2 class="section-title">Why Choose Coke Bake</h2>
+    <p class="section-subtitle">What makes every bite special</p>
+    <div class="why-grid animate-on-scroll">
+      <div class="why-card">
+        <div class="icon">🥤</div>
+        <h3>Coca-Cola Inspired</h3>
+        <p>Authentic cola notes blended into every dessert for a unique fizzy experience.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">👨‍🍳</div>
+        <h3>Handcrafted Daily</h3>
+        <p>Baked fresh every morning with premium ingredients and zero compromise.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">🌿</div>
+        <h3>Quality Ingredients</h3>
+        <p>Only the finest chocolate, cream, and natural flavours make it to our kitchen.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">🚚</div>
+        <h3>Fast Delivery</h3>
+        <p>Your desserts arrive fresh and ready to celebrate, right at your doorstep.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if combos %}
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Special Combos</h2>
+    <p class="section-subtitle">Perfect boxes for sharing the fizz</p>
+    <div class="product-grid animate-on-scroll">
+      {% for p in combos %}
+      <div class="product-card">
+        <div class="img-wrap">
+          <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="img-placeholder" style="display:none;position:absolute;inset:0;">🎁</div>
+        </div>
+        <div class="body">
+          <span class="category-tag">Combo</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <p class="desc">{{ p.description }}</p>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          <a href="{{ url_for('product.product_details', product_id=p.id) }}" class="btn btn-primary btn-sm btn-block">Order Combo</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <h2 class="section-title">What Our Customers Say</h2>
+    <p class="section-subtitle">Real love from dessert lovers</p>
+    <div class="review-grid animate-on-scroll">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>"The Classic Coke Cupcake is pure magic. That cola caramel centre is addictive!"</p>
+        <div class="author">— Priya S., Mumbai</div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>"Ordered the Party Dessert Box for my birthday. Everyone was blown away. 10/10."</p>
+        <div class="author">— Rahul M., Pune</div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>"Coke Chocolate Mousse is the best dessert I've had this year. Creamy perfection."</p>
+        <div class="author">— Ananya K., Bangalore</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <h2 class="section-title">More Ways to Enjoy</h2>
+    <div class="why-grid">
+      <a href="{{ url_for('extra.poll') }}" class="why-card" style="text-decoration:none;color:inherit;">
+        <div class="icon">🗳️</div>
+        <h3>Vote Your Top 3</h3>
+        <p>Pick your favourite desserts and see community rankings live.</p>
+      </a>
+      <a href="{{ url_for('extra.custom_order') }}" class="why-card" style="text-decoration:none;color:inherit;">
+        <div class="icon">✏️</div>
+        <h3>Custom Orders</h3>
+        <p>Message on cake, size & flavour — made just for you.</p>
+      </a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('extra.recommendations') }}" class="why-card" style="text-decoration:none;color:inherit;">
+        <div class="icon">✨</div>
+        <h3>For You</h3>
+        <p>Personalized picks based on what you love.</p>
+      </a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}" class="why-card" style="text-decoration:none;color:inherit;">
+        <div class="icon">✨</div>
+        <h3>For You</h3>
+        <p>Login to get personalized dessert recommendations.</p>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-section">
+      <h2>Ready to Taste the Fizz?</h2>
+      <p>Browse our full menu of Coca-Cola inspired desserts and treat yourself today.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-white">Explore Full Menu</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

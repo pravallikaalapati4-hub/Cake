@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Coke Bake{% endblock %} | Taste the Fizz. Love the Bake.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% if not request.path.startswith('/admin') %}
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="{{ url_for('main.home') }}" class="logo">
+        <div class="logo-icon">CB</div>
+        Coke <span>Bake</span>
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('main.home') }}" class="{{ 'active' if request.endpoint == 'main.home' }}">Home</a>
+        <a href="{{ url_for('product.menu') }}" class="{{ 'active' if request.endpoint == 'product.menu' }}">Menu</a>
+        <a href="{{ url_for('main.offers') }}" class="{{ 'active' if request.endpoint == 'main.offers' }}">Offers</a>
+        <a href="{{ url_for('extra.poll') }}" class="{{ 'active' if 'poll' in (request.endpoint or '') }}">Poll</a>
+        <a href="{{ url_for('extra.custom_order') }}" class="{{ 'active' if 'custom' in (request.endpoint or '') }}">Custom</a>
+        <a href="{{ url_for('main.about') }}" class="{{ 'active' if request.endpoint == 'main.about' }}">About</a>
+        <a href="{{ url_for('main.contact') }}" class="{{ 'active' if request.endpoint == 'main.contact' }}">Contact</a>
+      </div>
+      <div class="nav-actions">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('product.wishlist') }}" class="nav-icon-btn" title="Wishlist">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            {% if wishlist_count %}<span class="badge-count">{{ wishlist_count }}</span>{% endif %}
+          </a>
+          <a href="{{ url_for('cart.view_cart') }}" class="nav-icon-btn" title="Cart">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6L5 2H2"/></svg>
+            {% if cart_count %}<span class="badge-count cart">{{ cart_count }}</span>{% endif %}
+          </a>
+          <a href="{{ url_for('main.profile') }}" class="nav-icon-btn" title="Profile">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+          </a>
+          {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline">Admin</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-sm btn-outline">Login</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-sm btn-primary">Sign Up</a>
+        {% endif %}
+        <button class="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu">
+    <a href="{{ url_for('main.home') }}">Home</a>
+    <a href="{{ url_for('product.menu') }}">Menu</a>
+    <a href="{{ url_for('main.offers') }}">Offers</a>
+    <a href="{{ url_for('extra.poll') }}">Poll (Top 3)</a>
+    <a href="{{ url_for('extra.custom_order') }}">Custom Order</a>
+    <a href="{{ url_for('main.about') }}">About</a>
+    <a href="{{ url_for('main.contact') }}">Contact</a>
+    <a href="{{ url_for('main.faq') }}">FAQ</a>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('extra.recommendations') }}">For You</a>
+      <a href="{{ url_for('product.wishlist') }}">Wishlist</a>
+      <a href="{{ url_for('cart.view_cart') }}">Cart ({{ cart_count }})</a>
+      <a href="{{ url_for('order.my_orders') }}">My Orders</a>
+      <a href="{{ url_for('extra.my_custom_orders') }}">Custom Orders</a>
+      <a href="{{ url_for('main.profile') }}">Profile</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Login</a>
+      <a href="{{ url_for('auth.register') }}">Sign Up</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-flash">&times;</button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if not request.path.startswith('/admin') %}
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="{{ url_for('main.home') }}" class="logo">
+            <div class="logo-icon">CB</div>
+            Coke <span>Bake</span>
+          </a>
+          <p>Where every bite meets the fizz. Premium Coca-Cola inspired desserts crafted with love.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="Facebook">FB</a>
+            <a href="#" aria-label="Twitter">X</a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="{{ url_for('main.home') }}">Home</a></li>
+            <li><a href="{{ url_for('product.menu') }}">Menu</a></li>
+            <li><a href="{{ url_for('main.offers') }}">Offers</a></li>
+            <li><a href="{{ url_for('main.about') }}">About</a></li>
+            <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+            <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Customer</h4>
+          <ul>
+            <li><a href="{{ url_for('main.profile') if current_user.is_authenticated else url_for('auth.login') }}">My Account</a></li>
+            <li><a href="{{ url_for('order.my_orders') if current_user.is_authenticated else url_for('auth.login') }}">Orders</a></li>
+            <li><a href="{{ url_for('product.wishlist') if current_user.is_authenticated else url_for('auth.login') }}">Wishlist</a></li>
+            <li><a href="{{ url_for('cart.view_cart') if current_user.is_authenticated else url_for('auth.login') }}">Cart</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li>+91 98765 43210</li>
+            <li>hello@cokebake.com</li>
+            <li>Mon–Sun: 10 AM – 10 PM</li>
+            <li>Mumbai, India</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 Coke Bake. All Rights Reserved. Taste the Fizz. Love the Bake.
+      </div>
+    </div>
+  </footer>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

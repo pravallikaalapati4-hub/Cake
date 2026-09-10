@@ -1,0 +1,39 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block content %}
+<h1 style="margin-bottom:1.5rem;">Order #{{ order.id }}</h1>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="order-admin">
+  <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+    <h3 style="margin-bottom:1rem;">Details</h3>
+    <p><strong>Customer:</strong> {{ order.user.name }} ({{ order.user.email }})</p>
+    <p><strong>Phone:</strong> {{ order.user.phone or 'N/A' }}</p>
+    <p><strong>Date:</strong> {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+    <p><strong>Payment:</strong> {{ order.payment_method }}</p>
+    <p><strong>Status:</strong> <span class="status-badge status-{{ order.status }}">{{ order.status }}</span></p>
+    <hr style="margin:1rem 0;border:none;border-top:1px solid var(--gray-100);">
+    <h4>Address</h4>
+    <p style="white-space:pre-line;font-size:0.9rem;">{{ order.delivery_address }}</p>
+  </div>
+  <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+    <h3 style="margin-bottom:1rem;">Update Status</h3>
+    <form method="POST" action="{{ url_for('admin.update_order_status', order_id=order.id) }}">
+      <select name="status" class="form-control" style="margin-bottom:1rem;">
+        {% for s in ['Pending','Confirmed','Preparing','Out for Delivery','Delivered','Cancelled'] %}
+        <option value="{{ s }}" {{ 'selected' if order.status == s }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+    </form>
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--gray-100);">
+    <h4 style="margin-bottom:0.75rem;">Items</h4>
+    {% for item in order.items %}
+    <div class="summary-row">
+      <span>{{ item.product.name }} × {{ item.quantity }}</span>
+      <span>₹{{ '%.0f'|format(item.subtotal()) }}</span>
+    </div>
+    {% endfor %}
+    <div class="summary-row total"><span>Total</span><span>₹{{ '%.0f'|format(order.total_amount) }}</span></div>
+  </div>
+</div>
+<style>@media(max-width:768px){.order-admin{grid-template-columns:1fr!important;}}</style>
+{% endblock %}

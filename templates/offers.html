@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Offers{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">Special Offers</h1>
+    <p class="section-subtitle">Exclusive deals to make every order sweeter</p>
+
+    <div class="offer-grid">
+      <div class="offer-card">
+        <span class="badge">HOT</span>
+        <div class="img-placeholder" style="height:160px;font-size:3rem;">🧁</div>
+        <div class="body">
+          <h3>Buy 2 Cupcakes, Get 1 Free</h3>
+          <p style="color:var(--gray-500);margin:0.5rem 0 1rem;">Add any 3 cupcakes to cart — the lowest priced one is free. Auto-applied at checkout.</p>
+          <a href="{{ url_for('product.menu', category='Cupcakes') }}" class="btn btn-primary btn-sm">Shop Cupcakes</a>
+        </div>
+      </div>
+      <div class="offer-card">
+        <span class="badge">WEEKEND</span>
+        <div class="img-placeholder" style="height:160px;font-size:3rem;">🎁</div>
+        <div class="body">
+          <h3>Weekend Dessert Combo</h3>
+          <p style="color:var(--gray-500);margin:0.5rem 0 1rem;">Save 15% on any Combo box ordered Friday–Sunday. Perfect for parties.</p>
+          <a href="{{ url_for('product.menu', category='Combos') }}" class="btn btn-primary btn-sm">View Combos</a>
+        </div>
+      </div>
+      <div class="offer-card">
+        <span class="badge">CAKE</span>
+        <div class="img-placeholder" style="height:160px;font-size:3rem;">🎂</div>
+        <div class="body">
+          <h3>Coke Cake Special</h3>
+          <p style="color:var(--gray-500);margin:0.5rem 0 1rem;">Free mini cupcakes with every full-size cake order above ₹899.</p>
+          <a href="{{ url_for('product.menu', category='Cakes') }}" class="btn btn-primary btn-sm">Shop Cakes</a>
+        </div>
+      </div>
+      <div class="offer-card">
+        <span class="badge">FAMILY</span>
+        <div class="img-placeholder" style="height:160px;font-size:3rem;">🏠</div>
+        <div class="body">
+          <h3>Family Dessert Box</h3>
+          <p style="color:var(--gray-500);margin:0.5rem 0 1rem;">Ultimate Coke Dessert Combo at a special family price. Feeds 6–8.</p>
+          <a href="{{ url_for('product.menu', category='Combos') }}" class="btn btn-primary btn-sm">Get the Box</a>
+        </div>
+      </div>
+    </div>
+
+    {% if combos %}
+    <h2 class="section-title" style="margin-top:3.5rem;">Combo Deals</h2>
+    <div class="product-grid" style="margin-top:1.5rem;">
+      {% for p in combos %}
+      <div class="product-card">
+        <div class="img-wrap"><div class="img-placeholder">🎁</div></div>
+        <div class="body">
+          <span class="category-tag">Combo</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <p class="desc">{{ p.description }}</p>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          <a href="{{ url_for('product.product_details', product_id=p.id) }}" class="btn btn-primary btn-sm btn-block">Order Now</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

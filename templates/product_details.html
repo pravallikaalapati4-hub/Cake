@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <div class="product-detail">
+      <div class="gallery">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width:100%;aspect-ratio:1;object-fit:cover;"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="img-placeholder" style="display:none;aspect-ratio:1;font-size:5rem;">
+          {% if product.category.name == 'Cupcakes' %}🧁
+          {% elif product.category.name == 'Cakes' %}🎂
+          {% elif product.category.name == 'Pastries' %}🥐
+          {% elif product.category.name == 'Cream Desserts' %}🍮
+          {% else %}🎁{% endif %}
+        </div>
+      </div>
+      <div class="info">
+        <span class="category-tag" style="color:var(--coke-red);font-weight:600;text-transform:uppercase;font-size:0.8rem;">{{ product.category.name }}</span>
+        <h1>{{ product.name }}</h1>
+        <div class="rating" style="margin:0.5rem 0;">★ {{ product.rating }} · {{ reviews|length }} reviews</div>
+        <div class="price-lg">₹{{ '%.0f'|format(product.price) }}</div>
+        <p style="color:var(--gray-700);margin-bottom:1.25rem;">{{ product.description }}</p>
+        <p style="font-size:0.9rem;margin-bottom:0.5rem;"><strong>Ingredients:</strong> {{ product.ingredients }}</p>
+        <p style="font-size:0.9rem;margin-bottom:1.5rem;">
+          <strong>Availability:</strong>
+          {% if product.stock > 0 %}
+            <span style="color:var(--success);">In Stock ({{ product.stock }} left)</span>
+          {% else %}
+            <span style="color:var(--danger);">Out of Stock</span>
+          {% endif %}
+        </p>
+
+        {% if current_user.is_authenticated and product.stock > 0 %}
+        <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1rem;">
+          <div class="qty-selector">
+            <button type="button" data-action="minus">−</button>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+            <button type="button" data-action="plus">+</button>
+          </div>
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
+          <a href="{{ url_for('cart.view_cart') }}" class="btn btn-outline" onclick="this.previousElementSibling.click();">Buy Now</a>
+        </form>
+        <form action="{{ url_for('product.toggle_wishlist', product_id=product.id) }}" method="POST">
+          <button type="submit" class="btn btn-sm {{ 'btn-primary' if in_wishlist else 'btn-outline' }}">
+            {{ '♥ In Wishlist' if in_wishlist else '♡ Add to Wishlist' }}
+          </button>
+        </form>
+        {% elif not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Order</a>
+        {% else %}
+        <p style="color:var(--danger);">Currently out of stock.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if reviews %}
+    <div style="margin-top:3rem;">
+      <h2 style="margin-bottom:1.25rem;">Customer Reviews</h2>
+      {% for r in reviews %}
+      <div class="review-card" style="margin-bottom:1rem;">
+        <div class="stars">{{ '★' * r.rating }}{{ '☆' * (5 - r.rating) }}</div>
+        <p>{{ r.comment or 'Great product!' }}</p>
+        <div class="author">— {{ r.user.name }} · {{ r.created_at.strftime('%d %b %Y') }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+    <div style="margin-top:2rem;background:var(--white);padding:1.75rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);max-width:480px;">
+      <h3 style="margin-bottom:1rem;">Write a Review</h3>
+      <form action="{{ url_for('product.add_review', product_id=product.id) }}" method="POST">
+        <div class="form-group">
+          <label>Rating</label>
+          <select name="rating" class="form-control" required>
+            <option value="5">5 ★</option>
+            <option value="4">4 ★</option>
+            <option value="3">3 ★</option>
+            <option value="2">2 ★</option>
+            <option value="1">1 ★</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Comment</label>
+          <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Submit Review</button>
+      </form>
+    </div>
+    {% endif %}
+
+    {% if related %}
+    <div style="margin-top:3.5rem;">
+      <h2 class="section-title">You May Also Like</h2>
+      <div class="product-grid" style="margin-top:1.5rem;">
+        {% for p in related %}
+        <div class="product-card">
+          <div class="img-wrap">
+            <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="img-placeholder" style="display:none;position:absolute;inset:0;">🍰</div>
+          </div>
+          <div class="body">
+            <span class="category-tag">{{ p.category.name }}</span>
+            <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+            <div class="meta">
+              <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+              <span class="rating">★ {{ p.rating }}</span>
+            </div>
+            <a href="{{ url_for('product.product_details', product_id=p.id) }}" class="btn btn-outline btn-sm btn-block">View</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

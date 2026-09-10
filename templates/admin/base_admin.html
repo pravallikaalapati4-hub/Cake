@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} | Coke Bake</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="{{ url_for('admin.dashboard') }}" class="logo">
+        <div class="logo-icon">CB</div>
+        Coke <span>Bake</span> Admin
+      </a>
+      <div class="nav-actions">
+        <a href="{{ url_for('main.home') }}" class="btn btn-sm btn-outline">View Site</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-primary">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-flash">&times;</button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint == 'admin.dashboard' }}">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="{{ 'active' if 'product' in request.endpoint }}">🧁 Products</a>
+      <a href="{{ url_for('admin.categories') }}" class="{{ 'active' if 'categor' in request.endpoint }}">📁 Categories</a>
+      <a href="{{ url_for('admin.orders') }}" class="{{ 'active' if 'order' in request.endpoint }}">📦 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="{{ 'active' if 'user' in request.endpoint }}">👥 Users</a>
+      <a href="{{ url_for('admin.reviews') }}" class="{{ 'active' if 'review' in request.endpoint }}">⭐ Reviews</a>
+      <a href="{{ url_for('admin.messages') }}" class="{{ 'active' if 'message' in request.endpoint }}">✉️ Messages</a>
+    </aside>
+    <div class="admin-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

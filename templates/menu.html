@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Menu{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">Our Desserts</h1>
+    <p class="section-subtitle">Handcrafted Coca-Cola inspired treats for every craving</p>
+
+    <form method="GET" class="filters-bar">
+      <div class="search-box">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" name="q" class="form-control" placeholder="Search desserts..." value="{{ q or '' }}">
+      </div>
+      <select name="sort" class="form-control" style="width:auto;" onchange="this.form.submit()">
+        <option value="featured" {{ 'selected' if sort == 'featured' }}>Featured</option>
+        <option value="price_low" {{ 'selected' if sort == 'price_low' }}>Price: Low to High</option>
+        <option value="price_high" {{ 'selected' if sort == 'price_high' }}>Price: High to Low</option>
+        <option value="rating" {{ 'selected' if sort == 'rating' }}>Top Rated</option>
+        <option value="newest" {{ 'selected' if sort == 'newest' }}>Newest</option>
+      </select>
+      <input type="number" name="min_price" class="form-control" style="width:110px;" placeholder="Min ₹" value="{{ min_price or '' }}">
+      <input type="number" name="max_price" class="form-control" style="width:110px;" placeholder="Max ₹" value="{{ max_price or '' }}">
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    </form>
+
+    <div class="category-pills">
+      <a href="{{ url_for('product.menu') }}" class="pill {{ 'active' if current_category == 'all' or not current_category }}">All</a>
+      {% for c in categories %}
+      <a href="{{ url_for('product.menu', category=c.name) }}" class="pill {{ 'active' if current_category == c.name }}">{{ c.name }}</a>
+      {% endfor %}
+    </div>
+
+    {% if products %}
+    <div class="product-grid">
+      {% for p in products %}
+      <div class="product-card">
+        <div class="img-wrap">
+          <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="img-placeholder" style="display:none;position:absolute;inset:0;">
+            {% if p.category.name == 'Cupcakes' %}🧁
+            {% elif p.category.name == 'Cakes' %}🎂
+            {% elif p.category.name == 'Pastries' %}🥐
+            {% elif p.category.name == 'Cream Desserts' %}🍮
+            {% else %}🎁{% endif %}
+          </div>
+          {% if current_user.is_authenticated %}
+          <button class="wishlist-btn" data-wishlist-toggle data-url="{{ url_for('product.toggle_wishlist', product_id=p.id) }}">♥</button>
+          {% endif %}
+        </div>
+        <div class="body">
+          <span class="category-tag">{{ p.category.name }}</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <p class="desc">{{ p.description }}</p>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          {% if current_user.is_authenticated %}
+          <form action="{{ url_for('cart.add_to_cart', product_id=p.id) }}" method="POST" data-ajax-cart>
+            <button type="submit" class="btn btn-primary btn-sm btn-block">Add to Cart</button>
+          </form>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm btn-block">Login to Order</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>No desserts found</h3>
+      <p>Try adjusting your search or filters.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-primary">View All</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

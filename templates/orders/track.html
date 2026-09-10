@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Track Order #{{ order.id }}{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container" style="max-width:720px;">
+    <h1 class="section-title">Track Order #{{ order.id }}</h1>
+    <p class="section-subtitle">Status: <span class="status-badge status-{{ order.status }}">{{ order.status }}</span></p>
+
+    {% if order.status == 'Cancelled' %}
+    <div class="empty-state">
+      <h3>Order Cancelled</h3>
+      <p>This order has been cancelled.</p>
+    </div>
+    {% else %}
+    <div class="timeline">
+      {% set statuses = ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered'] %}
+      {% set current = order.status_index() %}
+      {% for s in statuses %}
+      <div class="timeline-step {{ 'done' if loop.index0 < current else ('active' if loop.index0 == current else '') }}">
+        <div class="dot">
+          {% if loop.index0 < current %}✓{% else %}{{ loop.index }}{% endif %}
+        </div>
+        <span>{{ s }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);margin-top:2rem;">
+      <h4 style="margin-bottom:0.75rem;">Order Summary</h4>
+      {% for item in order.items %}
+      <div class="summary-row"><span>{{ item.product.name }} × {{ item.quantity }}</span><span>₹{{ '%.0f'|format(item.subtotal()) }}</span></div>
+      {% endfor %}
+      <div class="summary-row total"><span>Total</span><span>₹{{ '%.0f'|format(order.total_amount) }}</span></div>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="{{ url_for('order.my_orders') }}" class="btn btn-outline">Back to Orders</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

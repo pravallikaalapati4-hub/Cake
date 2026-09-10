@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">Your Cart</h1>
+    {% if items %}
+    <div class="cart-layout">
+      <div>
+        {% for item in items %}
+        <div class="cart-item">
+          <div class="img-placeholder" style="width:90px;height:90px;border-radius:8px;font-size:2rem;flex-shrink:0;">🍰</div>
+          <div style="flex:1;">
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">{{ item.product.name }}</h3>
+            <p style="color:var(--coke-red);font-weight:700;">₹{{ '%.0f'|format(item.product.price) }}</p>
+          </div>
+          <form action="{{ url_for('cart.update_cart', item_id=item.id) }}" method="POST" style="display:flex;align-items:center;gap:0.5rem;">
+            <div class="qty-selector">
+              <button type="button" data-action="minus">−</button>
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+              <button type="button" data-action="plus">+</button>
+            </div>
+            <button type="submit" class="btn btn-sm btn-outline">Update</button>
+          </form>
+          <form action="{{ url_for('cart.remove_from_cart', item_id=item.id) }}" method="POST">
+            <button type="submit" class="btn-icon" title="Remove">🗑</button>
+          </form>
+          <div style="font-weight:700;min-width:70px;text-align:right;">₹{{ '%.0f'|format(item.subtotal()) }}</div>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('product.menu') }}" class="btn btn-outline" style="margin-top:1rem;">Continue Shopping</a>
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Subtotal</span><span>₹{{ '%.0f'|format(subtotal) }}</span></div>
+        <div class="summary-row"><span>Delivery</span><span>{% if delivery == 0 %}FREE{% else %}₹{{ delivery }}{% endif %}</span></div>
+        {% if subtotal < free_threshold %}
+        <p style="font-size:0.8rem;color:var(--gray-500);margin-bottom:0.75rem;">Add ₹{{ '%.0f'|format(free_threshold - subtotal) }} more for free delivery</p>
+        {% endif %}
+        <div class="summary-row total"><span>Total</span><span>₹{{ '%.0f'|format(total) }}</span></div>
+        <a href="{{ url_for('order.checkout') }}" class="btn btn-primary btn-block" style="margin-top:1.25rem;">Proceed to Checkout</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>Your cart is empty</h3>
+      <p>Looks like you haven't added any desserts yet.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-primary">Browse Menu</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

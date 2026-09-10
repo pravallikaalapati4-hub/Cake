@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Reviews{% endblock %}
+{% block content %}
+<h1 style="margin-bottom:1.5rem;">Reviews</h1>
+<table class="admin-table">
+  <thead>
+    <tr><th>ID</th><th>Product</th><th>User</th><th>Rating</th><th>Comment</th><th>Date</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for r in reviews %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.product.name }}</td>
+      <td>{{ r.user.name }}</td>
+      <td>{{ '★' * r.rating }}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">{{ r.comment or '—' }}</td>
+      <td>{{ r.created_at.strftime('%d %b %Y') }}</td>
+      <td>
+        <form action="{{ url_for('admin.delete_review', review_id=r.id) }}" method="POST" onsubmit="return confirm('Delete review?')">
+          <button type="submit" class="btn btn-sm" style="background:#FFEBEE;color:var(--danger);">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="text-align:center;color:var(--gray-500);">No reviews yet</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

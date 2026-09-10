@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}For You{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">Recommended For You</h1>
+    <p class="section-subtitle">Personalized picks based on your orders & wishlist</p>
+    {% if products %}
+    <div class="product-grid">
+      {% for p in products %}
+      <div class="product-card">
+        <div class="img-wrap">
+          <img src="{{ p.image_url }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="img-placeholder" style="display:none;">🍰</div>
+        </div>
+        <div class="body">
+          <span class="category-tag">{{ p.category.name }}</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=p.id) }}">{{ p.name }}</a></h3>
+          <p class="desc">{{ p.description }}</p>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(p.price) }}</span>
+            <span class="rating">★ {{ p.rating }}</span>
+          </div>
+          <form action="{{ url_for('cart.add_to_cart', product_id=p.id) }}" method="POST" data-ajax-cart>
+            <button type="submit" class="btn btn-primary btn-sm btn-block">Add to Cart</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>Start exploring</h3>
+      <p>Order or wishlist desserts to get better personal recommendations.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-primary">Browse Menu</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+  <h1>Products</h1>
+  <a href="{{ url_for('admin.add_product') }}" class="btn btn-primary btn-sm">+ Add Product</a>
+</div>
+<table class="admin-table">
+  <thead>
+    <tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Rating</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.name }}</td>
+      <td>{{ p.category.name }}</td>
+      <td>₹{{ '%.0f'|format(p.price) }}</td>
+      <td>{{ p.stock }}</td>
+      <td>{{ p.rating }}</td>
+      <td style="display:flex;gap:0.35rem;">
+        <a href="{{ url_for('admin.edit_product', product_id=p.id) }}" class="btn btn-sm btn-outline">Edit</a>
+        <form action="{{ url_for('admin.delete_product', product_id=p.id) }}" method="POST" onsubmit="return confirm('Delete this product?')">
+          <button type="submit" class="btn btn-sm" style="background:#FFEBEE;color:var(--danger);">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Poll Results{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container" style="max-width:800px;">
+    <h1 class="section-title">Poll Results</h1>
+    <p class="section-subtitle">{{ poll.title }} · {{ total_voters }} voter{{ 's' if total_voters != 1 }}</p>
+
+    {% if results %}
+    {% set max_score = results[0].score if results else 1 %}
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      {% for r in results %}
+      <div style="background:var(--white);padding:1.25rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:1.5rem;font-weight:700;color:var(--coke-red);min-width:36px;">#{{ loop.index }}</div>
+        <img src="{{ r.product.image_url }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:12px;"
+             onerror="this.src='';this.style.background='#F5EDE3';">
+        <div style="flex:1;">
+          <strong>{{ r.product.name }}</strong>
+          <div style="margin-top:0.4rem;background:var(--beige);border-radius:50px;height:10px;overflow:hidden;">
+            <div style="height:100%;width:{{ (r.score / max_score * 100)|int }}%;background:linear-gradient(90deg,var(--coke-red),var(--coke-red-light));border-radius:50px;"></div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;color:var(--coke-red);">{{ r.score }} pts</div>
+          <div style="font-size:0.8rem;color:var(--gray-500);">{{ r.vote_count }} votes</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>No votes yet</h3>
+      <p>Be the first to vote for your favourites!</p>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center;margin-top:2rem;">
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('extra.poll') }}" class="btn btn-primary">Cast / Update Vote</a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Vote</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

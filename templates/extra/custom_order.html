@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Custom Order{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container" style="max-width:640px;">
+    <h1 class="section-title">Customized Order</h1>
+    <p class="section-subtitle">Design your perfect Coke Bake dessert — message, size & flavours</p>
+
+    <div style="background:var(--white);padding:2rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);">
+      <form method="POST">
+        <div class="form-group">
+          <label>Base dessert (optional)</label>
+          <select name="base_product_id" class="form-control">
+            <option value="">— Fully custom / no base —</option>
+            {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }} — ₹{{ '%.0f'|format(p.price) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message on cake / dessert</label>
+          <input type="text" name="cake_message" class="form-control" maxlength="100" placeholder="e.g. Happy Birthday Priya!">
+        </div>
+        <div class="form-group">
+          <label>Size</label>
+          <select name="size" class="form-control">
+            <option value="Regular">Regular</option>
+            <option value="Medium">Medium (+₹150)</option>
+            <option value="Large">Large (+₹300)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Flavour notes</label>
+          <input type="text" name="flavour_notes" class="form-control" maxlength="200" placeholder="e.g. Extra cola syrup, less sweet, cherry topping">
+        </div>
+        <div class="form-group">
+          <label>Special instructions</label>
+          <textarea name="special_instructions" class="form-control" rows="3" placeholder="Allergies, colour theme, packaging notes..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Preferred delivery date</label>
+          <input type="date" name="delivery_date" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit Custom Order</button>
+      </form>
+    </div>
+    <p style="text-align:center;margin-top:1.25rem;">
+      <a href="{{ url_for('extra.my_custom_orders') }}" style="color:var(--coke-red);font-weight:600;">View my custom orders →</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

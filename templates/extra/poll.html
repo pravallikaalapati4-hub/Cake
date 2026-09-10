@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Favourite Poll{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container" style="max-width:720px;">
+    <h1 class="section-title">{{ poll.title }}</h1>
+    <p class="section-subtitle">{{ poll.description }}</p>
+
+    <div style="background:var(--white);padding:2rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);">
+      <form method="POST">
+        <div class="form-group">
+          <label>🥇 1st Favourite</label>
+          <select name="rank1" class="form-control" required>
+            <option value="">— Select product —</option>
+            {% for p in products %}
+            <option value="{{ p.id }}" {{ 'selected' if user_votes.get(1) == p.id }}>{{ p.name }} (₹{{ '%.0f'|format(p.price) }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🥈 2nd Favourite</label>
+          <select name="rank2" class="form-control" required>
+            <option value="">— Select product —</option>
+            {% for p in products %}
+            <option value="{{ p.id }}" {{ 'selected' if user_votes.get(2) == p.id }}>{{ p.name }} (₹{{ '%.0f'|format(p.price) }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>🥉 3rd Favourite</label>
+          <select name="rank3" class="form-control" required>
+            <option value="">— Select product —</option>
+            {% for p in products %}
+            <option value="{{ p.id }}" {{ 'selected' if user_votes.get(3) == p.id }}>{{ p.name }} (₹{{ '%.0f'|format(p.price) }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit My Top 3</button>
+      </form>
+      <p style="text-align:center;margin-top:1rem;">
+        <a href="{{ url_for('extra.poll_results') }}" style="color:var(--coke-red);font-weight:600;">View live results →</a>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

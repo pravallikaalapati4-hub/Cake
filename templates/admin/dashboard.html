@@ -1,0 +1,87 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 style="margin-bottom:1.5rem;">Dashboard</h1>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="label">Total Users</div>
+    <div class="value">{{ total_users }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Products</div>
+    <div class="value">{{ total_products }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Total Orders</div>
+    <div class="value">{{ total_orders }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Revenue</div>
+    <div class="value red">₹{{ '%.0f'|format(revenue) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Pending Orders</div>
+    <div class="value">{{ pending }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Completed</div>
+    <div class="value">{{ completed }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;" class="dash-charts">
+  <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+    <h3 style="margin-bottom:1rem;font-size:1.1rem;">Revenue (Last 7 Days)</h3>
+    <canvas id="revChart" height="200"></canvas>
+  </div>
+  <div style="background:var(--white);padding:1.5rem;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+    <h3 style="margin-bottom:1rem;font-size:1.1rem;">Quick Stats</h3>
+    <p style="margin-bottom:0.75rem;">Unread messages: <strong>{{ unread_messages }}</strong></p>
+    <a href="{{ url_for('admin.messages') }}" class="btn btn-sm btn-outline">View Messages</a>
+    <a href="{{ url_for('admin.orders', status='Pending') }}" class="btn btn-sm btn-primary" style="margin-left:0.5rem;">Pending Orders</a>
+  </div>
+</div>
+
+<h3 style="margin-bottom:1rem;">Recent Orders</h3>
+<table class="admin-table">
+  <thead>
+    <tr><th>ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for o in recent_orders %}
+    <tr>
+      <td>#{{ o.id }}</td>
+      <td>{{ o.user.name }}</td>
+      <td>₹{{ '%.0f'|format(o.total_amount) }}</td>
+      <td><span class="status-badge status-{{ o.status }}">{{ o.status }}</span></td>
+      <td>{{ o.created_at.strftime('%d %b %Y') }}</td>
+      <td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}" class="btn btn-sm btn-outline">View</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="text-align:center;color:var(--gray-500);">No orders yet</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<style>@media(max-width:768px){.dash-charts{grid-template-columns:1fr!important;}}</style>
+{% endblock %}
+{% block extra_js %}
+<script>
+new Chart(document.getElementById('revChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ chart_labels|tojson }},
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: {{ chart_data|tojson }},
+      backgroundColor: 'rgba(200, 16, 46, 0.7)',
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
+{% endblock %}

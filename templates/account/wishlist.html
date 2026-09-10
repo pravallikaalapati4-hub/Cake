@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Wishlist{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <h1 class="section-title">My Wishlist</h1>
+    {% if items %}
+    <div class="product-grid">
+      {% for item in items %}
+      <div class="product-card">
+        <div class="img-wrap"><div class="img-placeholder">🍰</div></div>
+        <div class="body">
+          <span class="category-tag">{{ item.product.category.name }}</span>
+          <h3><a href="{{ url_for('product.product_details', product_id=item.product.id) }}">{{ item.product.name }}</a></h3>
+          <div class="meta">
+            <span class="price">₹{{ '%.0f'|format(item.product.price) }}</span>
+            <span class="rating">★ {{ item.product.rating }}</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <form action="{{ url_for('cart.add_to_cart', product_id=item.product.id) }}" method="POST" style="flex:1;">
+              <button type="submit" class="btn btn-primary btn-sm btn-block">Add to Cart</button>
+            </form>
+            <form action="{{ url_for('product.remove_wishlist', product_id=item.product.id) }}" method="POST">
+              <button type="submit" class="btn-icon" title="Remove">🗑</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>Wishlist is empty</h3>
+      <p>Save your favourite desserts here for later.</p>
+      <a href="{{ url_for('product.menu') }}" class="btn btn-primary">Browse Menu</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
